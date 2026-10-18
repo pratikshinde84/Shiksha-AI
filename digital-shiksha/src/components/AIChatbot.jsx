@@ -16,8 +16,14 @@ export const AIChatbot = () => {
   const [apiKey, setApiKey] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
+  const [keyConfigured, setKeyConfigured] = useState(false);
   const { lang } = useContext(LanguageContext);
   const messagesEndRef = useRef(null);
+
+  // Check on mount whether a key is already available (env or session)
+  useEffect(() => {
+    setKeyConfigured(openRouterService.hasApiKey());
+  }, []);
 
   // Scroll to newest message
   useEffect(() => {
@@ -76,8 +82,12 @@ export const AIChatbot = () => {
   };
 
   const saveApiKey = () => {
-    openRouterService.setApiKey(apiKey);
-    setApiKey('');
+    if (apiKey.trim()) {
+      openRouterService.setApiKey(apiKey.trim());
+      setKeyConfigured(true);
+      setApiKey('');
+      setError(null);
+    }
   };
 
   return (
@@ -106,9 +116,16 @@ export const AIChatbot = () => {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50">
             {messages.length === 0 && (
-              <p className="text-xs text-gray-400 text-center py-4">
-                Ask anything about digital literacy!
-              </p>
+              <div className="text-center py-4 px-2">
+                <p className="text-xs text-gray-400 mb-1">
+                  Ask anything about digital literacy!
+                </p>
+                {!keyConfigured && (
+                  <p className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 rounded-lg px-2 py-1.5 mt-2">
+                    ⚠ Open Settings below to add your OpenRouter API key.
+                  </p>
+                )}
+              </div>
             )}
             {messages.map((msg, idx) => (
               <div
@@ -156,17 +173,22 @@ export const AIChatbot = () => {
               </div>
               <div>
                 <label className="block text-xs text-gray-600 mb-1">{t.apiKey}</label>
+                {/* Show current key status */}
+                <div className={`text-xs px-2 py-1 rounded mb-1.5 ${keyConfigured ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>
+                  {keyConfigured ? '✓ API key is configured' : '⚠ No API key found — enter one below or set VITE_OPENROUTER_API_KEY in .env'}
+                </div>
                 <div className="flex gap-1">
                   <input
                     type="password"
                     value={apiKey}
                     onChange={(e) => setApiKey(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder={keyConfigured ? 'Override key…' : 'sk-or-v1-…'}
                     className="flex-1 p-1.5 border border-gray-300 rounded text-xs"
                   />
                   <button
                     onClick={saveApiKey}
-                    className="px-2 py-1 bg-primary text-white text-xs rounded hover:opacity-90"
+                    disabled={!apiKey.trim()}
+                    className="px-2 py-1 bg-primary text-white text-xs rounded hover:opacity-90 disabled:opacity-40"
                   >
                     {t.save}
                   </button>
