@@ -12,7 +12,6 @@ import { About } from './pages/About';
 import { Contact } from './pages/Contact';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
-// Placeholder pages (to be implemented later)
 import { Dashboard } from './pages/Dashboard';
 import { Courses } from './pages/Courses';
 import { CourseDetails } from './pages/CourseDetails';
@@ -23,10 +22,6 @@ import { Certificates } from './pages/Certificates';
 import { AdminDashboard } from './pages/AdminDashboard';
 
 export const App = () => (
-// Keep named export for internal use
-);
-
-const AppDefault = () => (
   <AuthProvider>
     <LanguageProvider>
       <Router>
@@ -110,3 +105,5 @@ const AppDefault = () => (
     </LanguageProvider>
   </AuthProvider>
 );
+
+export default App;

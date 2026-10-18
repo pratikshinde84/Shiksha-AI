@@ -6,7 +6,8 @@ import { CourseCard } from '../components/CourseCard';
 import { storageService } from '../services/storageService';
 import { progressService } from '../services/progressService';
 import { AuthContext } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+// Static import — no CommonJS require() in ESM modules
+import { COURSES as DEFAULT_COURSES } from '../data/courses';
 
 export const Courses = () => {
   const { user } = useContext(AuthContext);
@@ -14,13 +15,11 @@ export const Courses = () => {
   const [progressMap, setProgressMap] = useState({});
 
   useEffect(() => {
-    // Seed courses if not present
+    // Seed courses into storage if not present yet
     let stored = storageService.getCourses();
     if (stored.length === 0) {
-      // Import default courses data
-      const { COURSES } = require('../data/courses');
-      storageService.setCourses(COURSES);
-      stored = COURSES;
+      storageService.setCourses(DEFAULT_COURSES);
+      stored = DEFAULT_COURSES;
     }
     setCourses(stored);
     if (user) {
@@ -29,8 +28,7 @@ export const Courses = () => {
     }
   }, [user]);
 
-  const getCourseProgress = (courseId) => {
-    const totalLessons = courses.find(c => c.id === courseId)?.lessons || 0;
+  const getCourseProgress = (courseId, totalLessons) => {
     if (!totalLessons) return 0;
     const userProg = progressMap[courseId];
     const completed = userProg?.completedLessons?.length || 0;
@@ -40,13 +38,15 @@ export const Courses = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto p-4 py-8">
-        <h1 className="text-3xl font-bold text-primary mb-6">All Courses</h1>
+      <main className="flex-1 page-content">
+        <h1 className="text-3xl font-bold text-primary mb-8">All Courses</h1>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((c) => (
-            <Link key={c.id} to={`/courses/${c.id}`}> 
-              <CourseCard course={c} progress={getCourseProgress(c.id)} />
-            </Link>
+            <CourseCard
+              key={c.id}
+              course={c}
+              progress={getCourseProgress(c.id, c.lessons)}
+            />
           ))}
         </div>
       </main>

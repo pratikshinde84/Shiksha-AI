@@ -1,7 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/*
+  Tailwind v4 theme: registers custom color names so utilities like
+  `text-primary`, `bg-primary`, `from-primary`, `to-secondary`, etc. are generated.
+*/
+@theme {
+  --color-primary: #2563EB;
+  --color-primary-dark: #1d4ed8;
+  --color-secondary: #10B981;
+  --color-secondary-dark: #059669;
+  --color-bg-light: #F0F7FF;
+  --color-text-dark: #0F172A;
+  --color-text-slate: #475569;
+}
 
 :root {
   --primary: #2563EB;
@@ -15,8 +27,6 @@
 
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
@@ -283,4 +293,66 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Page-level layout helpers ───────────────────────────────────────────── */
+
+/*
+  .page-content — consistent horizontal padding + max-width centering for
+  every page's <main> area. Use this instead of repeating px-4/max-w-* per page.
+*/
+.page-content {
+  width: 100%;
+  max-width: 80rem;       /* ~1280px, same as max-w-7xl */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2.5rem 1.5rem; /* py-10 px-6 */
+}
+
+@media (min-width: 640px) {
+  .page-content {
+    padding: 3rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .page-content {
+    padding: 3.5rem 3rem;
+  }
+}
+
+/* Narrower variant for forms, lesson text, quiz */
+.page-content-sm {
+  width: 100%;
+  max-width: 52rem;       /* ~832px */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2.5rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .page-content-sm {
+    padding: 3rem 2rem;
+  }
+}
+
+/* ── Lesson prose renderer ───────────────────────────────────────────────── */
+
+/*
+  .lesson-prose — styles raw lesson text that uses markdown-like conventions
+  (**bold**, ## heading, - bullet). Since content is plain text rendered via
+  whitespace-pre-wrap, we just ensure comfortable line-height and spacing.
+*/
+.lesson-prose {
+  font-size: 1rem;
+  line-height: 1.85;
+  color: #1e293b;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.lesson-prose strong,
+.lesson-prose b {
+  font-weight: 700;
+  color: #0f172a;
 }

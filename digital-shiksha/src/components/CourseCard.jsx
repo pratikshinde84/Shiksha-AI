@@ -1,34 +1,55 @@
 // src/components/CourseCard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ProgressBar } from './ProgressCard'; // reuse progress bar component
+import { ProgressBar } from './ProgressCard';
 
 /**
- * CourseCard displays a course thumbnail, title, description, difficulty, duration, and progress.
+ * CourseCard – displays icon, title, description, difficulty, duration, progress.
  * Props: course (object from COURSES), progress (0-100)
  */
 export const CourseCard = ({ course, progress = 0 }) => {
-  const { id, title, titleHi, titleMr, description, descHi, descMr, icon, color, bgColor, textColor } = course;
-
-  // Choose title/description based on language context (simplified: use English here)
-  const displayTitle = title;
-  const displayDesc = description;
+  const {
+    id, title, description, icon,
+    bgColor, textColor, borderColor,
+    difficulty, duration,
+  } = course;
 
   return (
-    <div className={`card-hover rounded-xl shadow-sm border ${bgColor} p-4 flex flex-col h-full`}>
-      <div className="flex items-center space-x-2 mb-3">
-        <span className="text-2xl">{icon}</span>
-        <h3 className={`text-lg font-semibold ${textColor}`}>{displayTitle}</h3>
+    <div className={`card-hover rounded-xl border ${borderColor || 'border-gray-200'} ${bgColor || 'bg-white'} p-5 flex flex-col h-full`}>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-3">
+        <span className="text-3xl">{icon}</span>
+        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${bgColor} ${textColor} border ${borderColor}`}>
+          {difficulty}
+        </span>
       </div>
-      <p className="text-sm text-gray-600 flex-grow mb-4 line-clamp-3">{displayDesc}</p>
-      <div className="mb-2">
-        <ProgressBar percent={progress} />
-      </div>
+
+      {/* Title */}
+      <h3 className={`text-base font-bold ${textColor} mb-1`}>{title}</h3>
+
+      {/* Description */}
+      <p className="text-xs text-gray-600 flex-1 line-clamp-3 mb-3">{description}</p>
+
+      {/* Meta */}
+      <p className="text-xs text-gray-500 mb-3">🕐 {duration}</p>
+
+      {/* Progress bar */}
+      {progress > 0 && (
+        <div className="mb-3">
+          <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <span>Progress</span>
+            <span>{progress}%</span>
+          </div>
+          <ProgressBar percent={progress} />
+        </div>
+      )}
+
+      {/* CTA */}
       <Link
         to={`/courses/${id}`}
-        className="mt-auto btn-primary self-start"
+        className="mt-auto btn-primary text-sm self-start"
       >
-        {progress > 0 ? 'Continue' : 'Start'}
+        {progress > 0 ? 'Continue →' : 'Start Learning'}
       </Link>
     </div>
   );

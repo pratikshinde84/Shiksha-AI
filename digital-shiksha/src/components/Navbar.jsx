@@ -3,6 +3,7 @@ import React, { useContext, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { LanguageContext } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 import { Menu, X } from 'lucide-react';
 
 const navItems = [
@@ -10,7 +11,6 @@ const navItems = [
   { to: '/courses', labelKey: 'courses' },
   { to: '/practice', labelKey: 'practice' },
   { to: '/about', labelKey: 'about' },
-  { to: '/ai-assistant', labelKey: 'aiAssistant' }
 ];
 
 export const Navbar = () => {
@@ -18,90 +18,72 @@ export const Navbar = () => {
   const { lang, changeLanguage } = useContext(LanguageContext);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const translations = {
-    en: {
-      home: 'Home',
-      courses: 'Courses',
-      practice: 'Practice Zone',
-      about: 'About Us',
-      aiAssistant: 'AI Assistant',
-      login: 'Login',
-      register: 'Register',
-      dashboard: 'Dashboard',
-      logout: 'Logout'
-    },
-    hi: {
-      home: 'मुख्य पृष्ठ',
-      courses: 'कोर्स',
-      practice: 'प्रैक्टिस ज़ोन',
-      about: 'हमारे बारे में',
-      aiAssistant: 'एआई सहायक',
-      login: 'लॉगिन',
-      register: 'रजिस्टर',
-      dashboard: 'डैशबोर्ड',
-      logout: 'लॉगआउट'
-    },
-    mr: {
-      home: 'मुख्य पृष्ठ',
-      courses: 'कोर्सेस',
-      practice: 'प्रॅक्टिस झोन',
-      about: 'आमच्याबद्दल',
-      aiAssistant: 'एआय सहायक',
-      login: 'लॉगिन',
-      register: 'नोंदणी',
-      dashboard: 'डॅशबोर्ड',
-      logout: 'लॉगआउट'
-    }
-  };
-
+  // Use the shared translations file — no more duplicated inline object
   const t = translations[lang] || translations.en;
 
-  const toggleMobile = () => setMobileOpen(!mobileOpen);
+  const toggleMobile = () => setMobileOpen((v) => !v);
+  const closeMobile = () => setMobileOpen(false);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-md glass">
+    <nav className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
-          <img src="/images/logo.svg" alt="Digital Shiksha" className="h-8 w-8 animate-float" />
+
+        {/* Logo — text-based fallback (no missing /images/logo.svg) */}
+        <Link to="/" className="flex items-center gap-2 shrink-0" onClick={closeMobile}>
+          <span className="text-2xl" aria-hidden="true">🎓</span>
           <span className="font-bold text-xl gradient-text">Digital Shiksha</span>
         </Link>
 
-        {/* Desktop menu */}
-        <div className="hidden md:flex md:items-center md:space-x-6">
+        {/* Desktop navigation */}
+        <div className="hidden md:flex md:items-center md:gap-6">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
+              end={item.to === '/'}
               className={({ isActive }) =>
-                `text-sm font-medium ${isActive ? 'text-primary' : 'text-gray-600'} hover:text-primary transition`
+                `text-sm font-medium transition-colors ${
+                  isActive ? 'text-primary' : 'text-gray-600 hover:text-primary'
+                }`
               }
             >
               {t[item.labelKey]}
             </NavLink>
           ))}
+
           {/* Language switcher */}
           <select
             value={lang}
             onChange={(e) => changeLanguage(e.target.value)}
-            className="ml-4 p-1 border rounded"
-            aria-label="Language selector"
+            className="p-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            aria-label="Select language"
           >
             <option value="en">English</option>
             <option value="hi">हिन्दी</option>
             <option value="mr">मराठी</option>
           </select>
-          {/* Auth links */}
+
+          {/* Auth */}
           {user ? (
-            <div className="flex items-center space-x-4 ml-4">
-              <span className="text-sm font-medium text-gray-800">{user.name}</span>
-              <Link to="/dashboard" className="btn-outline text-sm">{t.dashboard}</Link>
-              <button onClick={logout} className="btn-primary text-sm">{t.logout}</button>
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-800 max-w-[120px] truncate">
+                {user.name}
+              </span>
+              <Link to="/dashboard" className="btn-outline text-sm py-1.5 px-3">
+                {t.dashboard}
+              </Link>
+              <button onClick={logout} className="btn-primary text-sm py-1.5 px-3">
+                {t.logout}
+              </button>
             </div>
           ) : (
-            <div className="flex items-center space-x-4 ml-4">
-              <Link to="/login" className="btn-outline text-sm">{t.login}</Link>
-              <Link to="/register" className="btn-primary text-sm">{t.register}</Link>
+            <div className="flex items-center gap-3">
+              <Link to="/login" className="btn-outline text-sm py-1.5 px-3">
+                {t.login}
+              </Link>
+              <Link to="/register" className="btn-primary text-sm py-1.5 px-3">
+                {t.register}
+              </Link>
             </div>
           )}
         </div>
@@ -111,6 +93,7 @@ export const Navbar = () => {
           className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           onClick={toggleMobile}
           aria-label="Toggle navigation menu"
+          aria-expanded={mobileOpen}
         >
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
@@ -118,43 +101,78 @@ export const Navbar = () => {
 
       {/* Mobile menu panel */}
       {mobileOpen && (
-        <div className="md:hidden bg-white glass shadow-lg">
-          <div className="px-2 pt-2 pb-3 space-y-1">
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-lg">
+          <div className="px-4 pt-3 pb-4 space-y-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
-                onClick={() => setMobileOpen(false)}
+                end={item.to === '/'}
+                onClick={closeMobile}
                 className={({ isActive }) =>
-                  `block px-3 py-2 rounded-md text-base font-medium ${isActive ? 'text-primary' : 'text-gray-600'} hover:text-primary`
+                  `block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'text-primary bg-blue-50'
+                      : 'text-gray-600 hover:text-primary hover:bg-blue-50'
+                  }`
                 }
               >
                 {t[item.labelKey]}
               </NavLink>
             ))}
-            {/* Language selector for mobile */}
+
+            {/* Language selector */}
             <select
               value={lang}
               onChange={(e) => changeLanguage(e.target.value)}
-              className="block w-full p-2 border rounded"
-              aria-label="Language selector"
+              className="w-full mt-2 p-2 border border-gray-300 rounded-lg text-sm"
+              aria-label="Select language"
             >
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
               <option value="mr">मराठी</option>
             </select>
-            {/* Auth links mobile */}
-            {user ? (
-              <div className="mt-2 space-y-1">
-                <Link to="/dashboard" className="block w-full text-left btn-outline" onClick={() => setMobileOpen(false)}>{t.dashboard}</Link>
-                <button onClick={() => { logout(); setMobileOpen(false); }} className="block w-full text-left btn-primary">{t.logout}</button>
-              </div>
-            ) : (
-              <div className="mt-2 space-y-1">
-                <Link to="/login" className="block w-full text-left btn-outline" onClick={() => setMobileOpen(false)}>{t.login}</Link>
-                <Link to="/register" className="block w-full text-left btn-primary" onClick={() => setMobileOpen(false)}>{t.register}</Link>
-              </div>
-            )}
+
+            {/* Auth links */}
+            <div className="mt-3 space-y-2">
+              {user ? (
+                <>
+                  <p className="text-sm font-medium text-gray-700 px-3">
+                    {user.name}
+                  </p>
+                  <Link
+                    to="/dashboard"
+                    className="block w-full text-center btn-outline"
+                    onClick={closeMobile}
+                  >
+                    {t.dashboard}
+                  </Link>
+                  <button
+                    onClick={() => { logout(); closeMobile(); }}
+                    className="block w-full text-center btn-primary"
+                  >
+                    {t.logout}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    className="block w-full text-center btn-outline"
+                    onClick={closeMobile}
+                  >
+                    {t.login}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="block w-full text-center btn-primary"
+                    onClick={closeMobile}
+                  >
+                    {t.register}
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

@@ -3,79 +3,140 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
-// import removed due to missing icon
+import { COURSES } from '../data/courses';
 
-/**
- * Home page – hero banner + informational sections.
- * Uses Tailwind utilities and custom gradient text.
- */
 export const Home = () => {
+  const featuredCourses = COURSES.slice(0, 4);
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
-      {/* Hero */}
-      <section className="bg-gradient-to-r from-primary to-secondary text-white py-20 px-4 md:px-12">
+
+      {/* Hero — solid gradient BG, plain white text */}
+      <section className="bg-gradient-to-r from-primary to-secondary text-white py-24 px-6 md:px-16">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="hero-text text-4xl md:text-5xl font-bold mb-4 gradient-text">
+          <h1 className="hero-text text-4xl md:text-5xl font-bold mb-5 text-white leading-tight">
             Empowering Rural Students Through Digital Education
           </h1>
-          <p className="text-lg md:text-xl mb-6 max-w-2xl mx-auto">
-            Learn essential digital skills anytime, anywhere. From computer basics to internet safety, start your digital journey with free, easy-to-understand lessons.
+          <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto text-white/90 leading-relaxed">
+            Learn essential digital skills anytime, anywhere. From computer basics to internet
+            safety, start your digital journey with free, easy-to-understand lessons.
           </p>
-          <div className="flex justify-center space-x-4">
-            <Link to="/courses" className="btn-primary">
-              Start Learning
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link to="/register" className="btn-primary" style={{ background: 'white', color: '#2563EB', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+              Get Started Free
             </Link>
-            <Link to="/about" className="btn-outline">
-              Explore Courses
+            <Link to="/about" className="btn-outline" style={{ borderColor: 'white', color: 'white' }}>
+              Learn More
             </Link>
           </div>
         </div>
       </section>
 
       {/* Why Digital Literacy Matters */}
-      <section className="py-16 px-4 md:px-12">
-        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 items-center">
+      <section className="py-20 px-6 md:px-16">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-4">
-            <h2 className="text-2xl font-semibold text-primary">Why Digital Literacy Matters</h2>
-            <p className="text-gray-700">In today’s world, digital skills open doors to education, employment, and access to government services. Rural communities can bridge the gap and participate fully in the digital economy.</p>
-            <ul className="list-disc list-inside text-gray-600 space-y-2">
-              <li>Improved job prospects</li>
-              <li>Access to online education</li>
-              <li>Safer online transactions</li>
-              <li>Better connection with government services</li>
+            <h2 className="text-2xl font-bold text-primary">Why Digital Literacy Matters</h2>
+            <p className="text-gray-700">
+              In today's world, digital skills open doors to education, employment, and access
+              to government services. Rural communities can bridge the gap and participate
+              fully in the digital economy.
+            </p>
+            <ul className="space-y-2">
+              {[
+                'Improved job prospects',
+                'Access to online education',
+                'Safer online transactions',
+                'Better connection with government services',
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-2 text-gray-700">
+                  <span className="text-secondary font-bold mt-0.5">✓</span>
+                  {item}
+                </li>
+              ))}
             </ul>
+            <Link to="/courses" className="btn-primary inline-flex mt-2">
+              Browse Courses
+            </Link>
           </div>
           <div className="flex justify-center">
-            <img src="/images/illustration-1.svg" alt="Students learning" className="w-80 h-auto animate-float" />
+            {/* Decorative placeholder — /images/illustration-1.svg doesn't exist */}
+            <div className="w-72 h-72 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center text-8xl">
+              📚
+            </div>
           </div>
         </div>
       </section>
 
       {/* Featured Courses */}
-      <section className="bg-gray-50 py-16 px-4 md:px-12">
-        <div className="max-w-5xl mx-auto text-center mb-8">
-          <h2 className="text-3xl font-bold text-primary mb-2">Featured Digital Literacy Courses</h2>
-          <p className="text-gray-600">Start with these beginner-friendly modules designed for rural learners.</p>
-        </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Placeholder cards – real data will be loaded from COURSES */}
-          {[1,2,3,4].map((i) => (
-            <div key={i} className="bg-white rounded-xl shadow-sm p-4 flex flex-col h-64">
-              <div className="flex-1">
-                <h3 className="font-medium text-primary mb-2">Course {i}</h3>
-                <p className="text-sm text-gray-600">Brief description of the course content.</p>
+      <section className="bg-gray-50 py-20 px-6 md:px-16">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-primary mb-2">
+              Featured Digital Literacy Courses
+            </h2>
+            <p className="text-gray-600">
+              Start with these beginner-friendly modules designed for rural learners.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredCourses.map((course) => (
+              <div
+                key={course.id}
+                className={`card-hover rounded-xl border ${course.borderColor} ${course.bgColor} p-5 flex flex-col`}
+              >
+                <div className="text-3xl mb-3">{course.icon}</div>
+                <h3 className={`font-semibold text-sm mb-2 ${course.textColor}`}>
+                  {course.title}
+                </h3>
+                <p className="text-xs text-gray-600 flex-1 line-clamp-3 mb-4">
+                  {course.description}
+                </p>
+                <Link
+                  to="/register"
+                  className="btn-primary text-xs self-start"
+                >
+                  Start Learning
+                </Link>
               </div>
-              <Link to="/courses" className="mt-2 btn-primary text-sm self-start">Explore</Link>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/courses" className="btn-outline">
+              View All 8 Courses →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats strip */}
+      <section className="py-16 px-6 bg-white">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {[
+            { value: '8', label: 'Courses' },
+            { value: '3', label: 'Languages' },
+            { value: '100%', label: 'Free' },
+            { value: '∞', label: 'Learners' },
+          ].map((stat) => (
+            <div key={stat.label}>
+              <p className="text-4xl font-bold text-primary">{stat.value}</p>
+              <p className="text-gray-600 text-sm mt-1">{stat.label}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-primary text-white text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to start your digital journey?</h2>
-        <Link to="/register" className="btn-outline text-white border-white hover:bg-white hover:text-primary transition">
+      <section className="py-24 bg-primary text-white text-center px-6">
+        <h2 className="text-3xl font-bold mb-3">Ready to start your digital journey?</h2>
+        <p className="text-white/80 mb-6 max-w-xl mx-auto">
+          Join thousands of students learning digital skills for free.
+        </p>
+        <Link
+          to="/register"
+          className="btn-outline border-white text-white hover:bg-white hover:text-primary transition"
+        >
           Join for Free
         </Link>
       </section>
